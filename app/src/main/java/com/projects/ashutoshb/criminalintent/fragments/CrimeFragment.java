@@ -3,13 +3,17 @@ package com.projects.ashutoshb.criminalintent.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,15 +42,19 @@ public class CrimeFragment extends Fragment {
     public static final String EXTRA_CRIME_ID =
             "com.projects.ashutoshb.criminalintent.crime_id";
 
-    @Bind(R.id.crime_title) EditText mTitleField;
-    @Bind(R.id.crime_date) Button mDateButton;
-    @Bind(R.id.crime_solved) CheckBox mSolvedCheckBox;
-
+    @Bind(R.id.crime_title)
+    EditText mTitleField;
+    @Bind(R.id.crime_date)
+    Button mDateButton;
+    @Bind(R.id.crime_solved)
+    CheckBox mSolvedCheckBox;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        setRetainInstance(true);
         UUID crimeId = (UUID) getArguments().getSerializable(EXTRA_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
@@ -62,6 +70,11 @@ public class CrimeFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
         ButterKnife.bind(this, v);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (NavUtils.getParentActivityName(getActivity()) != null)
+              activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+          }
         mTitleField.setText(mCrime.getmTitle());
         mSolvedCheckBox.setChecked(mCrime.isSolved());
         mTitleField.addTextChangedListener(new TextWatcher() {
@@ -81,7 +94,7 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-       // String df = android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", mCrime.getDate()).toString();
+        // String df = android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", mCrime.getDate()).toString();
         updateDate();
         mDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,8 +102,8 @@ public class CrimeFragment extends Fragment {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 DatePickerFragment dialog = DatePickerFragment
                         .newInstance(mCrime.getDate());
-                dialog.setTargetFragment(CrimeFragment.this,REQUEST_DATE);
-                dialog.show(fm,DIALOG_DATE);
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                dialog.show(fm, DIALOG_DATE);
 
             }
         });
@@ -100,7 +113,6 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSolved(isChecked);
             }
         });
-
 
 
         return v;
@@ -118,11 +130,30 @@ public class CrimeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK) return;
         if (requestCode == REQUEST_DATE) {
-            Date date = (Date)data
+            Date date = (Date) data
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
             updateDate();
 
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (NavUtils.getParentActivityName(getActivity()) != null)
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity()).saveCrimes();
     }
 }

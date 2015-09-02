@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.projects.ashutoshb.criminalintent.fragments.CrimeFragment;
 import com.projects.ashutoshb.criminalintent.models.Crime;
 import com.projects.ashutoshb.criminalintent.models.CustomViewHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +25,8 @@ import java.util.List;
 public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
     private List<Crime> CrimeList;
     private Context mContext;
+
+    private SparseBooleanArray selectedItems;
 
     public MyRecyclerAdapter(Context context, List<Crime> CrimeList) {
         this.CrimeList = CrimeList;
@@ -33,7 +37,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
     public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_item, null);
 
-        CustomViewHolder viewHolder = new CustomViewHolder(view);
+        CustomViewHolder viewHolder = new CustomViewHolder(view, mContext);
         return viewHolder;
     }
 
@@ -70,4 +74,6 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
     public int getItemCount() {
         return (null != CrimeList ? CrimeList.size() : 0);
     }
+
+
 }

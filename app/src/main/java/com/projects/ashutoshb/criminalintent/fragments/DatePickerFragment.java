@@ -46,6 +46,8 @@ public class DatePickerFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        setRetainInstance(true);
         mDate = (Date)getArguments().getSerializable(EXTRA_DATE);
 
         // Create a Calendar to get the year, month, and day

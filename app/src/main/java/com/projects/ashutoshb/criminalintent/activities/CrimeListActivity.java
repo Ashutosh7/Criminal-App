@@ -2,6 +2,7 @@ package com.projects.ashutoshb.criminalintent.activities;
 
 import android.support.v4.app.Fragment;
 
+import com.projects.ashutoshb.criminalintent.fragments.BaseFragment;
 import com.projects.ashutoshb.criminalintent.fragments.CrimeListFragment;
 
 /**
@@ -14,4 +15,6 @@ public class CrimeListActivity extends SingleFragmentActivity{
     protected Fragment createFragment() {
         return new CrimeListFragment();
     }
+
+
 }
